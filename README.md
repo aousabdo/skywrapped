@@ -18,20 +18,38 @@ Pick your lights folder and the cards are made on your computer. Nothing is uplo
 
 ## Install and run
 
-```
-pipx run --spec "skywrapped[cli]" skywrapped PATH
-```
+You need Python 3.10 or newer. Use whichever of these three you have; each one makes the same cards.
 
-or
+With pip:
 
-```
+```bash
 pip install "skywrapped[cli]"
-skywrapped PATH
+skywrapped ~/Astro/Lights
 ```
 
-`PATH` is one or more folders (or files) of light frames. FITS (`.fit`, `.fits`, `.fts`), `.fz` and XISF files are
-read, and subfolders are searched. Gzipped files (`.fits.gz`) are not read: decompress them first. The `cli` extra
-adds the PNG renderer; without it, use `--json-only`.
+With [uv](https://docs.astral.sh/uv/), without installing anything:
+
+```bash
+uvx --from "skywrapped[cli]" skywrapped ~/Astro/Lights
+```
+
+With [pipx](https://pipx.pypa.io/), without installing anything:
+
+```bash
+pipx run --spec "skywrapped[cli]" skywrapped ~/Astro/Lights
+```
+
+Replace `~/Astro/Lights` with your own lights folder (on Windows, a path like `D:\Astro\Lights`). You can give
+several folders or single files, and subfolders are searched. The cards land in a new `skywrapped-<year>` folder
+inside the folder you ran the command from; open its `index.html` to flip through them.
+
+If `pip install` stops with "externally-managed-environment" (Homebrew Python on a Mac, many Linux systems), use
+`uvx` or `pipx` instead, or install into a virtual environment.
+
+If your rejected subs sit in their own folders, leave them out: `--exclude '*/rejected/*'`.
+
+FITS (`.fit`, `.fits`, `.fts`), `.fz` and XISF files are read. Gzipped files (`.fits.gz`) are not read: decompress
+them first. The `cli` extra adds the PNG renderer; without it, use `--json-only`.
 
 | Option | What it does |
 |---|---|

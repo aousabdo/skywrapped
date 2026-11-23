@@ -1,6 +1,11 @@
 # Changelog
 
-## 0.1.0 - Unreleased
+## Unreleased
+
+- README: the run commands use a real-looking folder instead of a `PATH` placeholder, and show `pip`, `uvx` and
+  `pipx` side by side, so the first command works without pipx.
+
+## 0.1.0 - 2026-11-23
 
 First release.
 
