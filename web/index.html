@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js; style-src 'self'; img-src 'self' blob: data:; worker-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Turn a folder of astrophotography light frames into year-in-astro cards. It reads file headers only, in your browser; nothing is uploaded.">
+<meta name="color-scheme" content="dark">
+<title>Skywrapped</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+<script type="module" src="app.js"></script>
+</head>
+<body>
+<main>
+  <header class="top">
+    <p class="kicker">Skywrapped</p>
+    <h1>Your year under the night sky, in six cards.</h1>
+  </header>
+
+  <section id="drop" class="pick" aria-label="Choose your lights folder">
+    <button id="choose" type="button" class="primary">Choose your lights folder</button>
+    <input id="folder" type="file" webkitdirectory multiple hidden aria-hidden="true" tabindex="-1">
+    <p class="hint">or drop it here</p>
+    <p class="promise">Your files never leave your computer. Location is never shown.</p>
+  </section>
+
+  <form id="options" class="options" aria-label="Card options">
+    <div class="field">
+      <label for="year">Year</label>
+      <select id="year" name="year"></select>
+    </div>
+    <div class="field">
+      <label for="tz">Time zone</label>
+      <select id="tz" name="tz" aria-describedby="tz-help"></select>
+      <p id="tz-help" class="help">For files that carry no site or local time.</p>
+    </div>
+    <fieldset class="field theme">
+      <legend>Look</legend>
+      <label><input type="radio" name="theme" value="observatory" checked> Observatory</label>
+      <label><input type="radio" name="theme" value="nebula"> Nebula</label>
+    </fieldset>
+  </form>
+
+  <div class="progress-wrap" id="progress-wrap" hidden>
+    <progress id="progress" max="1" value="0" aria-labelledby="status"></progress>
+  </div>
+  <p id="status" class="status" role="status" aria-live="polite"></p>
+
+  <section id="results" class="results" aria-label="Your cards" hidden>
+    <p id="totals" class="totals"></p>
+    <p id="skipped" class="skipped"></p>
+    <div class="actions">
+      <button id="download-all" type="button" class="primary">Download all</button>
+    </div>
+    <div id="cards" class="cards"></div>
+  </section>
+
+  <footer class="foot">
+    <p>Tested with: @@TESTED_VENDORS@@</p>
+    <p>skywrapped @@VERSION@@ reads FITS and XISF headers in your browser; the pixels are never read.</p>
+  </footer>
+</main>
+</body>
+</html>

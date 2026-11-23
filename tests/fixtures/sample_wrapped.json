@@ -1,0 +1,775 @@
+{
+ "_comment": "Card-test sample: INVENTED numbers, generic rigs and well-known targets with made-up hours, over seeded synthetic nights (scripts/make_sample_wrapped.py). Nobody's observing log.",
+ "year": 2026,
+ "partial": false,
+ "first_night": "2026-01-04",
+ "last_night": "2026-12-27",
+ "hours": 412.0,
+ "frames": 19240,
+ "nights": 87,
+ "targets": 41,
+ "per_night": [
+  {
+   "date": "2026-01-04",
+   "hours": 2.62,
+   "telescopes": 2,
+   "targets": 2,
+   "moon": 0.75
+  },
+  {
+   "date": "2026-01-25",
+   "hours": 1.16,
+   "telescopes": 3,
+   "targets": 3,
+   "moon": 0.48
+  },
+  {
+   "date": "2026-01-26",
+   "hours": 1.64,
+   "telescopes": 1,
+   "targets": 1,
+   "moon": 0.02
+  },
+  {
+   "date": "2026-01-31",
+   "hours": 3.58,
+   "telescopes": 1,
+   "targets": 3,
+   "moon": 0.95
+  },
+  {
+   "date": "2026-02-06",
+   "hours": 1.27,
+   "telescopes": 1,
+   "targets": 3,
+   "moon": 0.97
+  },
+  {
+   "date": "2026-02-19",
+   "hours": 1.34,
+   "telescopes": 3,
+   "targets": 1,
+   "moon": 0.84
+  },
+  {
+   "date": "2026-02-24",
+   "hours": 3.39,
+   "telescopes": 1,
+   "targets": 1,
+   "moon": 0.07
+  },
+  {
+   "date": "2026-03-02",
+   "hours": 2.3,
+   "telescopes": 3,
+   "targets": 3,
+   "moon": 0.18
+  },
+  {
+   "date": "2026-03-20",
+   "hours": 1.03,
+   "telescopes": 1,
+   "targets": 2,
+   "moon": 0.22
+  },
+  {
+   "date": "2026-03-24",
+   "hours": 1.32,
+   "telescopes": 3,
+   "targets": 2,
+   "moon": 0.85
+  },
+  {
+   "date": "2026-03-28",
+   "hours": 3.35,
+   "telescopes": 3,
+   "targets": 3,
+   "moon": 0.19
+  },
+  {
+   "date": "2026-03-29",
+   "hours": 4.0,
+   "telescopes": 1,
+   "targets": 1,
+   "moon": 0.56
+  },
+  {
+   "date": "2026-04-01",
+   "hours": 3.21,
+   "telescopes": 2,
+   "targets": 2,
+   "moon": 0.59
+  },
+  {
+   "date": "2026-04-02",
+   "hours": 3.61,
+   "telescopes": 3,
+   "targets": 1,
+   "moon": 0.87
+  },
+  {
+   "date": "2026-04-19",
+   "hours": 5.22,
+   "telescopes": 1,
+   "targets": 1,
+   "moon": 0.85
+  },
+  {
+   "date": "2026-04-22",
+   "hours": 1.35,
+   "telescopes": 3,
+   "targets": 2,
+   "moon": 0.76
+  },
+  {
+   "date": "2026-04-23",
+   "hours": 3.45,
+   "telescopes": 3,
+   "targets": 2,
+   "moon": 0.39
+  },
+  {
+   "date": "2026-04-24",
+   "hours": 5.19,
+   "telescopes": 3,
+   "targets": 2,
+   "moon": 0.25
+  },
+  {
+   "date": "2026-04-29",
+   "hours": 3.29,
+   "telescopes": 1,
+   "targets": 1,
+   "moon": 0.35
+  },
+  {
+   "date": "2026-04-30",
+   "hours": 2.68,
+   "telescopes": 3,
+   "targets": 1,
+   "moon": 0.06
+  },
+  {
+   "date": "2026-05-01",
+   "hours": 3.07,
+   "telescopes": 2,
+   "targets": 1,
+   "moon": 0.86
+  },
+  {
+   "date": "2026-05-05",
+   "hours": 5.55,
+   "telescopes": 2,
+   "targets": 2,
+   "moon": 0.13
+  },
+  {
+   "date": "2026-05-09",
+   "hours": 4.47,
+   "telescopes": 3,
+   "targets": 1,
+   "moon": 0.63
+  },
+  {
+   "date": "2026-05-21",
+   "hours": 5.16,
+   "telescopes": 3,
+   "targets": 2,
+   "moon": 0.6
+  },
+  {
+   "date": "2026-05-22",
+   "hours": 2.72,
+   "telescopes": 3,
+   "targets": 1,
+   "moon": 0.74
+  },
+  {
+   "date": "2026-05-23",
+   "hours": 5.47,
+   "telescopes": 3,
+   "targets": 2,
+   "moon": 0.02
+  },
+  {
+   "date": "2026-05-27",
+   "hours": 4.26,
+   "telescopes": 3,
+   "targets": 3,
+   "moon": 0.72
+  },
+  {
+   "date": "2026-05-28",
+   "hours": 1.67,
+   "telescopes": 1,
+   "targets": 1,
+   "moon": 0.01
+  },
+  {
+   "date": "2026-05-29",
+   "hours": 5.76,
+   "telescopes": 3,
+   "targets": 2,
+   "moon": 0.89
+  },
+  {
+   "date": "2026-05-30",
+   "hours": 2.87,
+   "telescopes": 2,
+   "targets": 1,
+   "moon": 0.24
+  },
+  {
+   "date": "2026-06-03",
+   "hours": 2.0,
+   "telescopes": 2,
+   "targets": 2,
+   "moon": 0.78
+  },
+  {
+   "date": "2026-06-04",
+   "hours": 5.06,
+   "telescopes": 2,
+   "targets": 2,
+   "moon": 0.63
+  },
+  {
+   "date": "2026-06-06",
+   "hours": 3.7,
+   "telescopes": 1,
+   "targets": 3,
+   "moon": 0.2
+  },
+  {
+   "date": "2026-06-07",
+   "hours": 4.47,
+   "telescopes": 1,
+   "targets": 2,
+   "moon": 0.67
+  },
+  {
+   "date": "2026-06-09",
+   "hours": 0.9,
+   "telescopes": 2,
+   "targets": 2,
+   "moon": 0.33
+  },
+  {
+   "date": "2026-06-11",
+   "hours": 6.68,
+   "telescopes": 2,
+   "targets": 3,
+   "moon": 0.9
+  },
+  {
+   "date": "2026-06-19",
+   "hours": 6.32,
+   "telescopes": 3,
+   "targets": 3,
+   "moon": 0.03
+  },
+  {
+   "date": "2026-06-23",
+   "hours": 6.52,
+   "telescopes": 2,
+   "targets": 1,
+   "moon": 0.32
+  },
+  {
+   "date": "2026-06-24",
+   "hours": 2.08,
+   "telescopes": 3,
+   "targets": 1,
+   "moon": 0.61
+  },
+  {
+   "date": "2026-06-25",
+   "hours": 2.7,
+   "telescopes": 1,
+   "targets": 3,
+   "moon": 0.96
+  },
+  {
+   "date": "2026-06-27",
+   "hours": 6.57,
+   "telescopes": 1,
+   "targets": 2,
+   "moon": 0.14
+  },
+  {
+   "date": "2026-07-03",
+   "hours": 3.47,
+   "telescopes": 1,
+   "targets": 1,
+   "moon": 0.88
+  },
+  {
+   "date": "2026-07-04",
+   "hours": 7.11,
+   "telescopes": 1,
+   "targets": 2,
+   "moon": 0.64
+  },
+  {
+   "date": "2026-07-13",
+   "hours": 3.29,
+   "telescopes": 2,
+   "targets": 1,
+   "moon": 0.5
+  },
+  {
+   "date": "2026-07-14",
+   "hours": 3.68,
+   "telescopes": 3,
+   "targets": 2,
+   "moon": 0.52
+  },
+  {
+   "date": "2026-07-18",
+   "hours": 7.73,
+   "telescopes": 1,
+   "targets": 3,
+   "moon": 0.35
+  },
+  {
+   "date": "2026-07-27",
+   "hours": 7.38,
+   "telescopes": 3,
+   "targets": 1,
+   "moon": 0.66
+  },
+  {
+   "date": "2026-07-29",
+   "hours": 2.81,
+   "telescopes": 1,
+   "targets": 3,
+   "moon": 0.09
+  },
+  {
+   "date": "2026-07-30",
+   "hours": 5.82,
+   "telescopes": 3,
+   "targets": 2,
+   "moon": 0.25
+  },
+  {
+   "date": "2026-07-31",
+   "hours": 2.71,
+   "telescopes": 1,
+   "targets": 1,
+   "moon": 0.97
+  },
+  {
+   "date": "2026-08-01",
+   "hours": 3.61,
+   "telescopes": 1,
+   "targets": 1,
+   "moon": 0.62
+  },
+  {
+   "date": "2026-08-02",
+   "hours": 10.85,
+   "telescopes": 2,
+   "targets": 3,
+   "moon": 0.03
+  },
+  {
+   "date": "2026-08-03",
+   "hours": 2.64,
+   "telescopes": 1,
+   "targets": 2,
+   "moon": 0.15
+  },
+  {
+   "date": "2026-08-04",
+   "hours": 2.93,
+   "telescopes": 3,
+   "targets": 3,
+   "moon": 0.77
+  },
+  {
+   "date": "2026-08-05",
+   "hours": 6.47,
+   "telescopes": 3,
+   "targets": 3,
+   "moon": 0.71
+  },
+  {
+   "date": "2026-08-06",
+   "hours": 2.64,
+   "telescopes": 2,
+   "targets": 1,
+   "moon": 0.02
+  },
+  {
+   "date": "2026-08-15",
+   "hours": 2.91,
+   "telescopes": 2,
+   "targets": 2,
+   "moon": 0.18
+  },
+  {
+   "date": "2026-08-17",
+   "hours": 4.52,
+   "telescopes": 2,
+   "targets": 2,
+   "moon": 0.51
+  },
+  {
+   "date": "2026-08-20",
+   "hours": 14.2,
+   "telescopes": 3,
+   "targets": 2,
+   "moon": 0.7
+  },
+  {
+   "date": "2026-08-29",
+   "hours": 2.87,
+   "telescopes": 3,
+   "targets": 1,
+   "moon": 0.61
+  },
+  {
+   "date": "2026-08-31",
+   "hours": 9.36,
+   "telescopes": 2,
+   "targets": 2,
+   "moon": 0.84
+  },
+  {
+   "date": "2026-09-03",
+   "hours": 6.2,
+   "telescopes": 3,
+   "targets": 1,
+   "moon": 0.19
+  },
+  {
+   "date": "2026-09-05",
+   "hours": 8.25,
+   "telescopes": 2,
+   "targets": 2,
+   "moon": 0.29
+  },
+  {
+   "date": "2026-09-06",
+   "hours": 7.63,
+   "telescopes": 3,
+   "targets": 1,
+   "moon": 0.14
+  },
+  {
+   "date": "2026-09-07",
+   "hours": 3.51,
+   "telescopes": 3,
+   "targets": 1,
+   "moon": 0.69
+  },
+  {
+   "date": "2026-09-08",
+   "hours": 2.55,
+   "telescopes": 1,
+   "targets": 3,
+   "moon": 0.92
+  },
+  {
+   "date": "2026-09-10",
+   "hours": 4.55,
+   "telescopes": 2,
+   "targets": 2,
+   "moon": 0.87
+  },
+  {
+   "date": "2026-09-12",
+   "hours": 8.4,
+   "telescopes": 1,
+   "targets": 1,
+   "moon": 0.17
+  },
+  {
+   "date": "2026-09-19",
+   "hours": 2.16,
+   "telescopes": 1,
+   "targets": 2,
+   "moon": 0.32
+  },
+  {
+   "date": "2026-09-26",
+   "hours": 8.01,
+   "telescopes": 1,
+   "targets": 2,
+   "moon": 0.06
+  },
+  {
+   "date": "2026-09-29",
+   "hours": 6.74,
+   "telescopes": 3,
+   "targets": 3,
+   "moon": 0.36
+  },
+  {
+   "date": "2026-10-03",
+   "hours": 5.6,
+   "telescopes": 2,
+   "targets": 2,
+   "moon": 0.58
+  },
+  {
+   "date": "2026-10-07",
+   "hours": 3.44,
+   "telescopes": 2,
+   "targets": 1,
+   "moon": 0.19
+  },
+  {
+   "date": "2026-10-10",
+   "hours": 5.91,
+   "telescopes": 3,
+   "targets": 1,
+   "moon": 0.53
+  },
+  {
+   "date": "2026-10-13",
+   "hours": 4.91,
+   "telescopes": 1,
+   "targets": 1,
+   "moon": 0.96
+  },
+  {
+   "date": "2026-10-17",
+   "hours": 21.6,
+   "telescopes": 3,
+   "targets": 5,
+   "moon": 0.35
+  },
+  {
+   "date": "2026-10-21",
+   "hours": 3.38,
+   "telescopes": 3,
+   "targets": 3,
+   "moon": 0.21
+  },
+  {
+   "date": "2026-10-30",
+   "hours": 7.16,
+   "telescopes": 1,
+   "targets": 3,
+   "moon": 0.89
+  },
+  {
+   "date": "2026-11-02",
+   "hours": 4.46,
+   "telescopes": 2,
+   "targets": 2,
+   "moon": 0.81
+  },
+  {
+   "date": "2026-11-04",
+   "hours": 6.89,
+   "telescopes": 1,
+   "targets": 3,
+   "moon": 0.44
+  },
+  {
+   "date": "2026-11-16",
+   "hours": 9.12,
+   "telescopes": 2,
+   "targets": 1,
+   "moon": 0.1
+  },
+  {
+   "date": "2026-11-19",
+   "hours": 9.2,
+   "telescopes": 1,
+   "targets": 1,
+   "moon": 0.79
+  },
+  {
+   "date": "2026-11-20",
+   "hours": 4.28,
+   "telescopes": 2,
+   "targets": 1,
+   "moon": 0.36
+  },
+  {
+   "date": "2026-11-27",
+   "hours": 4.05,
+   "telescopes": 3,
+   "targets": 1,
+   "moon": 0.59
+  },
+  {
+   "date": "2026-12-12",
+   "hours": 7.9,
+   "telescopes": 3,
+   "targets": 1,
+   "moon": 0.68
+  },
+  {
+   "date": "2026-12-23",
+   "hours": 3.41,
+   "telescopes": 1,
+   "targets": 1,
+   "moon": 0.55
+  },
+  {
+   "date": "2026-12-27",
+   "hours": 2.69,
+   "telescopes": 2,
+   "targets": 2,
+   "moon": 0.61
+  }
+ ],
+ "best_month": {
+  "month": 8,
+  "hours": 63.0
+ },
+ "longest_streak": {
+  "nights": 9,
+  "start": "2026-07-29",
+  "end": "2026-08-06"
+ },
+ "busiest_night": {
+  "date": "2026-10-17",
+  "hours": 21.6,
+  "telescopes": 3,
+  "targets": 5,
+  "moon": 0.35
+ },
+ "bright_moon_share": 0.31,
+ "full_moon_nights": 7,
+ "moon_uses_altitude": true,
+ "top_targets": [
+  {
+   "key": "M42",
+   "label": "M 42",
+   "common_name": "Orion Nebula",
+   "hours": 58.6,
+   "frames": 1172,
+   "nights": 9,
+   "distance_ly": 1494
+  },
+  {
+   "key": "M31",
+   "label": "M 31",
+   "common_name": "Andromeda Galaxy",
+   "hours": 44.2,
+   "frames": 884,
+   "nights": 7,
+   "distance_ly": 2511401
+  },
+  {
+   "key": "NGC7000",
+   "label": "NGC 7000",
+   "common_name": "North America Nebula",
+   "hours": 37.9,
+   "frames": 758,
+   "nights": 6,
+   "distance_ly": 2639
+  },
+  {
+   "key": "IC1805",
+   "label": "IC 1805",
+   "common_name": "Heart Nebula",
+   "hours": 31.5,
+   "frames": 630,
+   "nights": 5,
+   "distance_ly": 6406
+  },
+  {
+   "key": "M45",
+   "label": "M 45",
+   "common_name": "Pleiades",
+   "hours": 26.8,
+   "frames": 536,
+   "nights": 4,
+   "distance_ly": 440
+  },
+  {
+   "key": "M33",
+   "label": "M 33",
+   "common_name": "Triangulum Galaxy",
+   "hours": 21.3,
+   "frames": 426,
+   "nights": 3,
+   "distance_ly": 2853865
+  },
+  {
+   "key": "M27",
+   "label": "M 27",
+   "common_name": "Dumbbell Nebula",
+   "hours": 17.4,
+   "frames": 348,
+   "nights": 2,
+   "distance_ly": 1248
+  },
+  {
+   "key": "M51",
+   "label": "M 51",
+   "common_name": "Whirlpool Galaxy",
+   "hours": 14.1,
+   "frames": 282,
+   "nights": 2,
+   "distance_ly": 27397104
+  },
+  {
+   "key": "M81",
+   "label": "M 81",
+   "common_name": "Bode's Galaxy",
+   "hours": 11.7,
+   "frames": 234,
+   "nights": 1,
+   "distance_ly": 11921002
+  },
+  {
+   "key": "M101",
+   "label": "M 101",
+   "common_name": null,
+   "hours": 9.6,
+   "frames": 192,
+   "nights": 1,
+   "distance_ly": 22667842
+  }
+ ],
+ "setups": [
+  {
+   "label": "80 mm refractor · ASI2600MC",
+   "hours": 158.0,
+   "frames": 4740
+  },
+  {
+   "label": "8\" SCT · ASI533MC",
+   "hours": 104.0,
+   "frames": 3120
+  },
+  {
+   "label": "Seestar S50",
+   "hours": 77.0,
+   "frames": 2310
+  },
+  {
+   "label": "Dwarf 3",
+   "hours": 49.0,
+   "frames": 1470
+  },
+  {
+   "label": "200 mm lens · ASI183MM",
+   "hours": 24.0,
+   "frames": 720
+  }
+ ],
+ "coldest_sensor_c": null,
+ "from_stacks_only": false,
+ "night_boundaries_estimated": false,
+ "skipped": {
+  "calibration": 0,
+  "not_light": 0,
+  "type_assumed": 0,
+  "duplicate": 0,
+  "stack_with_subs": 0,
+  "outside_year": 0,
+  "excluded": 0,
+  "unreadable": 0,
+  "metadata_file": 0,
+  "no_time": 0
+ }
+}

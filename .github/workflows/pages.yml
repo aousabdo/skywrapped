@@ -1,0 +1,51 @@
+name: Pages
+
+# Builds the web page (the wheel plus web/) into _site/ and deploys it. Runs on a push to main that changes the page
+# or the package, or by hand. It does not run on tags: the github-pages environment only deploys from the default
+# branch. In the repository settings, Pages must be set to "GitHub Actions" (Settings > Pages > Source).
+
+on:
+  push:
+    branches: [main]
+    paths: ["web/**", "src/**", "scripts/build_web.py", ".github/workflows/pages.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build the wheel and _site
+        run: |
+          python -m pip install --upgrade build
+          python scripts/build_web.py
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,12 @@
+.venv/
+.cache/
+_site/
+__pycache__/
+*.egg-info/
+dist/
+build/
+.superpowers/
+.pytest_cache/
+.DS_Store
+tests/.private_values
+node_modules/

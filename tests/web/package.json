@@ -1,0 +1,15 @@
+{
+  "name": "skywrapped-web-smoke",
+  "private": true,
+  "description": "Node smoke test for the skywrapped web page: the pinned Pyodide, the built wheel, the fixture flow.",
+  "type": "module",
+  "scripts": {
+    "smoke": "node smoke.mjs ../../_site"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "pyodide": "314.0.8"
+  }
+}

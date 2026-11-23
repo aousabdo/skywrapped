@@ -1,0 +1,62 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "skywrapped"
+dynamic = ["version"]
+description = "Turn a folder of astrophotography light frames into year-in-astro cards, reading FITS headers only."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT AND CC-BY-SA-4.0 AND OFL-1.1"
+license-files = ["LICENSE", "LICENSE-DATA.md", "src/skywrapped/cards/fonts/OFL.txt"]
+authors = [{ name = "Aous Abdo" }]
+dependencies = []
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Operating System :: OS Independent",
+  "Topic :: Scientific/Engineering :: Astronomy",
+]
+
+[project.urls]
+Homepage = "https://aousabdo.github.io/skywrapped/"
+Source = "https://github.com/aousabdo/skywrapped"
+Changelog = "https://github.com/aousabdo/skywrapped/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+cli = ["resvg-py>=0.5"]
+dev = ["pytest", "astropy", "astroquery", "fonttools"]
+
+[project.scripts]
+skywrapped = "skywrapped.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/skywrapped"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "src/",
+  "tests/",
+  "scripts/",
+  "docs/vendors.md",
+  "docs/images/",
+  "web/",
+  "README.md",
+  "LICENSE",
+  "LICENSE-DATA.md",
+  "CHANGELOG.md",
+  "pyproject.toml",
+]
+exclude = ["tests/.private_values", "tests/web/node_modules/"]
+
+[tool.hatch.version]
+path = "src/skywrapped/__init__.py"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["tests"]
