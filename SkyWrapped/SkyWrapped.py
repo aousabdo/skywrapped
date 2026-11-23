@@ -1,4 +1,4 @@
-# SkyWrapped - your year in astro, from your light frames' headers.   Siril: Scripts > <folder> > SkyWrapped
+# SkyWrapped - your year in astro, from your light frames' headers.   Siril: Scripts > Python Scripts > <folder> > SkyWrapped.py
 # (c) 2026 Aous Abdo - https://github.com/aousabdo/skywrapped (questions and bug reports: the Issues page there)
 # SPDX-License-Identifier: MIT
 #
@@ -7,7 +7,8 @@
 """SkyWrapped: turn a folder of light frames into "year in astro" cards, from inside Siril.
 
 Picked from Siril's Scripts menu it opens a window: choose the folder, press Run, flip through the six cards and the
-poster, press Save PNGs. Typed in Siril's command line (or run by siril-cli) it needs no window:
+poster, press Save PNGs (typed as plain ``pyscript SkyWrapped.py`` it opens the same window). Typed in Siril's command
+line with a folder (or run by siril-cli) it needs no window:
 
     pyscript SkyWrapped.py <folder> [<folder> ...] [--year N | --all] [--theme observatory|nebula] [--tz HOURS]
                            [--out DIR] [--exclude GLOB]... [--default-excludes] [--json-only]
@@ -264,9 +265,10 @@ def write_summary(out, summary: dict) -> None:
 def write_output(out, wrapped, cards, png_renderer=None, json_only: bool = False) -> dict:
     """Write the marked output folder exactly as the skywrapped command line does; returns the summary dict.
 
-    summary.json first, then every card's SVG, then the PNGs (``png_renderer(svg, width) -> bytes``) and index.html.
-    Raises OutputFolderRefused for a folder with other files in it; whatever ``png_renderer`` raises (PngUnavailable)
-    comes out after summary.json and the SVGs are already written, as on the command line.
+    summary.json first, then card by card: the PNG is drawn (``png_renderer(svg, width) -> bytes``) and then that
+    card's SVG and PNG are written; index.html last. This is the command line's own order (cli._write_cards), so a
+    failure leaves the same files behind. Raises OutputFolderRefused for a folder with other files in it; whatever
+    ``png_renderer`` raises (PngUnavailable) comes out with summary.json (and the cards drawn before it) written.
     """
     sw = _sw()
     out = str(out)
@@ -278,9 +280,9 @@ def write_output(out, wrapped, cards, png_renderer=None, json_only: bool = False
     if json_only:
         return summary
     for stem, card in cards:
+        png = png_renderer(card.svg, card.width)
         Path(out, f"{stem}.svg").write_text(card.svg, encoding="utf-8")
-    for stem, card in cards:
-        Path(out, f"{stem}.png").write_bytes(png_renderer(card.svg, card.width))
+        Path(out, f"{stem}.png").write_bytes(png)
     sw.preview.write_preview(Path(out), [card for _, card in cards])
     return summary
 
@@ -339,17 +341,68 @@ def register_fonts() -> None:
 
 _TEXT_RE = re.compile(r"<text\b([^>]*)>(.*?)</text>", re.S)
 _ATTR_RE = re.compile(r'([\w:-]+)="([^"]*)"')
+_TAG_RE = re.compile(r"<[A-Za-z][^<>]*>")
+_OPACITY_OF = {"fill": "fill-opacity", "stroke": "stroke-opacity", "stop-color": "stop-opacity"}
+
+
+def _rgba_parts(text: str):
+    """``"255, 255, 255, 0.08"`` (or with % values) -> ("#ffffff", 0.08); None when it is not four numbers."""
+    parts = [p.strip() for p in text.split(",")]
+    if len(parts) != 4:
+        return None
+    try:
+        rgb = [float(p[:-1]) * 2.55 if p.endswith("%") else float(p) for p in parts[:3]]
+        alpha = float(parts[3][:-1]) / 100.0 if parts[3].endswith("%") else float(parts[3])
+    except ValueError:
+        return None
+    r, g, b = (max(0, min(255, round(v))) for v in rgb)
+    return f"#{r:02x}{g:02x}{b:02x}", max(0.0, min(1.0, alpha))
+
+
+def _qt_tag_colors(tag: str) -> str:
+    """One start tag with fill/stroke/stop-color="rgba(...)" written as "#rrggbb" plus the matching *-opacity
+    (multiplied into an opacity the tag already has, so the attribute is never doubled)."""
+    for prop, op in _OPACITY_OF.items():
+        pat = re.compile(rf'(?<![\w-]){prop}="\s*rgba\(([^)"]*)\)\s*"')
+        m = pat.search(tag)
+        if not m:
+            continue
+        conv = _rgba_parts(m.group(1))
+        if conv is None:
+            continue
+        colour, alpha = conv
+        old = re.search(rf'\s{op}="([^"]*)"', tag)
+        if old:
+            try:
+                alpha *= float(old.group(1))
+            except ValueError:
+                pass
+            tag = tag[:old.start()] + tag[old.end():]
+            m = pat.search(tag)
+        tag = tag[:m.start()] + f'{prop}="{colour}" {op}="{alpha:.4g}"' + tag[m.end():]
+    return tag
+
+
+def qt_colors(svg: str) -> str:
+    """QtSvg follows SVG Tiny 1.2, which has no rgba(): Qt paints such a fill solid black (the Nebula theme's empty
+    calendar nights and target-bar tracks). Write every rgba() fill/stroke/stop-color as a colour plus an opacity."""
+    if "rgba(" not in svg:
+        return svg
+    return _TAG_RE.sub(lambda m: _qt_tag_colors(m.group(0)) if "rgba(" in m.group(0) else m.group(0), svg)
 
 
 def qt_ready_svg(svg: str, advance=None) -> str:
-    """The same card, adjusted for QtSvg, which differs from skywrapped's own PNG renderer (resvg) in two ways.
+    """The same card, adjusted for QtSvg, which differs from skywrapped's own PNG renderer (resvg) in three ways.
 
+    * rgba() colours: Qt has none and paints them black, so they become a colour plus an opacity (qt_colors).
     * font-family: Qt reads the whole attribute as one name, so ``'Skywrapped EB Garamond', serif`` finds no font and
       the serif headings come out in the default sans. Only the first family is kept.
     * letter-spacing: Qt ignores it, so the tracked capitals and the big numbers would look different. A tracked
       text is split into one <text> per letter, placed with ``advance(family, weight, char)`` (the letter's width as a
       fraction of the font size). Anchors (start, middle, end) are worked out from the full width.
     """
+    svg = qt_colors(svg)
+
     def one(m):
         attrs = dict(_ATTR_RE.findall(m.group(1)))
         body = m.group(2)
@@ -487,14 +540,15 @@ def run_headless(argv, say=say_default, png_renderer=None, install: bool = True)
         return EXIT_SETUP
     say(f"SkyWrapped {VERSION}, skywrapped {sw.version}")
     plan = plan_from_args(ns)
+    paths = [os.path.expanduser(p) for p in ns.paths]       # a shell expands ~ for the CLI; Siril's command line does not
     if ns.out:
-        out = ns.out
+        out = os.path.expanduser(ns.out)
         if not output_ok(out):
             say("Choose an empty output folder (or one skywrapped made before).", "error")
             return EXIT_BAD_OUT
     else:
         out = str(free_output_dir(plan.year))
-    missing = [p for p in ns.paths if not os.path.exists(p)]
+    missing = [p for p in paths if not os.path.exists(p)]
     if missing:
         n = len(missing)
         say(f"{n} of the given paths {'does' if n == 1 else 'do'} not exist.", "error")
@@ -504,7 +558,7 @@ def run_headless(argv, say=say_default, png_renderer=None, install: bool = True)
         if done % sw.cli.PROGRESS_EVERY == 0 or done == total:
             say(f"Read {done:,} of {total:,} files")
 
-    frames, skipped = scan_frames(ns.paths, plan.excludes, progress)
+    frames, skipped = scan_frames(paths, plan.excludes, progress)
     try:
         wrapped = count_year(frames, skipped, plan.year, plan.tz)
     except sw.stats.NoLightsError as e:
@@ -623,14 +677,23 @@ def _build_gui():
                 self._last = now
                 self.progress.emit(done, total)
 
+        def _check(self):
+            """Cancel is honoured between the steps too, not only while files are read."""
+            if self._stop.is_set():
+                raise Cancelled()
+
         def run(self):
             sw = _sw()
             skipped = {}
             try:
                 frames, skipped = scan_frames(self.paths, self.excludes, self._tick, self._stop.is_set)
+                self._check()
                 wrapped = count_year(frames, skipped, self.year, self.tz)
-                self.done.emit(dict(wrapped=wrapped, summary=sw.stats.to_summary(wrapped), year=self.year,
-                                    cards=draw_cards(wrapped, self.theme), theme=self.theme))
+                self._check()
+                result = dict(wrapped=wrapped, summary=sw.stats.to_summary(wrapped), year=self.year,
+                              cards=draw_cards(wrapped, self.theme), theme=self.theme)
+                self._check()
+                self.done.emit(result)
             except Cancelled:
                 self.failed.emit("cancelled", None)
             except sw.stats.NoLightsError as e:
@@ -776,10 +839,10 @@ def _build_gui():
             self.folder.setToolTip("Subfolders are searched. FITS (.fit .fits .fts .fz) and XISF files are read, "
                                    "headers only.")
             self.folder.textChanged.connect(lambda _t: self._set_state())
-            choose = QtWidgets.QPushButton("Choose...")
-            choose.clicked.connect(self.choose_folder)
+            self.choose_btn = QtWidgets.QPushButton("Choose...")
+            self.choose_btn.clicked.connect(self.choose_folder)
             row.addWidget(self.folder, 1)
-            row.addWidget(choose)
+            row.addWidget(self.choose_btn)
             g.addLayout(row)
             row2 = QtWidgets.QHBoxLayout()
             self.parent_btn = QtWidgets.QPushButton("Use the parent folder")
@@ -844,10 +907,10 @@ def _build_gui():
             self.excludes.setFixedHeight(64)
             self.excludes.setToolTip("One pattern per line; * matches anything. Rejected subs and preview pictures "
                                      "are left out by default.")
-            reset = QtWidgets.QPushButton("Reset the list")
-            reset.clicked.connect(lambda: self.excludes.setPlainText("\n".join(DEFAULT_EXCLUDES)))
+            self.reset_btn = QtWidgets.QPushButton("Reset the list")
+            self.reset_btn.clicked.connect(lambda: self.excludes.setPlainText("\n".join(DEFAULT_EXCLUDES)))
             g.addWidget(self.excludes)
-            g.addWidget(reset, 0, Qt.AlignmentFlag.AlignLeft)
+            g.addWidget(self.reset_btn, 0, Qt.AlignmentFlag.AlignLeft)
             col.addWidget(box)
 
             row = QtWidgets.QHBoxLayout()
@@ -908,11 +971,11 @@ def _build_gui():
             row = QtWidgets.QHBoxLayout()
             self.save_parent_edit = QtWidgets.QLineEdit(self.save_parent)
             self.save_parent_edit.setReadOnly(True)
-            change = QtWidgets.QPushButton("Change...")
-            change.clicked.connect(self.change_save_parent)
+            self.change_btn = QtWidgets.QPushButton("Change...")
+            self.change_btn.clicked.connect(self.change_save_parent)
             row.addWidget(QtWidgets.QLabel("Save in"))
             row.addWidget(self.save_parent_edit, 1)
-            row.addWidget(change)
+            row.addWidget(self.change_btn)
             sp.addLayout(row)
             self.out_label = QtWidgets.QLabel("")
             self.out_label.setObjectName("Hint")
@@ -958,9 +1021,10 @@ def _build_gui():
             self.save_panel.setVisible(self.result is not None)
             self.save_btn.setEnabled(self.result is not None and not running)
             self.open_btn.setEnabled(self.saved_to is not None and Path(self.saved_to).is_dir())
-            self.parent_btn.setEnabled(bool(self.folder.text().strip()))
-            for w in (self.folder, self.excludes, self.year_spin, self.tz, self.r_this, self.r_year, self.r_all):
-                w.setEnabled(not running)
+            self.parent_btn.setEnabled(bool(self.folder.text().strip()) and not running)
+            for w in (self.folder, self.choose_btn, self.excludes, self.reset_btn, self.year_spin, self.tz,
+                      self.r_this, self.r_year, self.r_all, self.theme, self.change_btn):
+                w.setEnabled(not running)              # what is on screen always matches the run being made
 
         def _banner(self, text, color=DIM, retry=False):
             self.banner.setText(f'<span style="color:{color}">{html.escape(text)}</span>')    # labels read HTML: a path may hold < or &
@@ -1058,7 +1122,7 @@ def _build_gui():
             self._set_state()
 
         def cancel(self):
-            if self._running():
+            if self._running() and self.end is None:           # not once the result has arrived (the thread may still be ending)
                 self.worker.cancel()
                 self.cancel_btn.setEnabled(False)
                 self._status("Cancelling...")
@@ -1070,6 +1134,9 @@ def _build_gui():
             self._status(f"Reading headers: {done:,} of {total:,} files")
 
         def _done(self, result):
+            if self.worker is not None and self.worker._stop.is_set():   # Cancel pressed as the result was on its way
+                self._failed("cancelled", None)
+                return
             self.result, self.end = result, "ok"
             line = _sw().cli._final_line(result["summary"])
             self.bar.setRange(0, 1)
@@ -1078,6 +1145,7 @@ def _build_gui():
             self.result_label.setText(f"{'All years' if result['year'] is None else result['year']}:  {line}")
             self.viewer.set_cards(result["cards"])
             self._refresh_out()
+            self.cancel_btn.setEnabled(False)                  # nothing left to cancel; the thread is only ending
             self.say(f"SkyWrapped: {line}", "good")
 
         def _failed(self, kind, extra):
@@ -1123,16 +1191,19 @@ def _build_gui():
         def save(self):
             if self.result is None:
                 return
+            # No busy cursor here: Qt's wait cursor on macOS (Siril 1.4.5's PyQt6 6.11) crashes Python with signal 11,
+            # either when it is set or when it is freed as the script ends ("Python quit unexpectedly"). Reproduced
+            # 3 times out of 4 with setOverrideCursor(WaitCursor) alone, 2026-11-23; never without it.
+            self.save_btn.setEnabled(False)
+            self._status("Saving the cards...")
+            QtWidgets.QApplication.processEvents()
             try:
                 out = self._out_dir()
-                QtWidgets.QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
-                try:
-                    write_output(out, self.result["wrapped"], self.result["cards"], svg_to_png_qt)
-                finally:
-                    QtWidgets.QApplication.restoreOverrideCursor()
+                write_output(out, self.result["wrapped"], self.result["cards"], svg_to_png_qt)
             except (OutputFolderRefused, PngUnavailable, OSError) as e:
                 self._status(f"Could not save: {e}", BAD_C)
                 self.say(f"SkyWrapped: could not save: {e}", "error")
+                self._set_state()
                 return
             self.saved_to = str(out)
             n = len(self.result["cards"])
@@ -1151,7 +1222,11 @@ def _build_gui():
                 return
             if self._running():
                 self.worker.cancel()
-                self.worker.wait(15000)                       # it stops at the next file; listing a huge folder cannot be interrupted
+                if not self.worker.wait(15000):               # it stops at the next file; listing a huge folder cannot
+                    e.ignore()                                # be interrupted, and a thread still running at exit crashes
+                    self._status("Still stopping: the folder is still being listed. Close the window again in a "
+                                 "moment.")
+                    return
             super().closeEvent(e)
 
     _GUI = SimpleNamespace(Window=Window, dark_theme=dark_theme)
@@ -1197,10 +1272,12 @@ def main(argv=None) -> int:
     except Exception:
         siril = None
     say = siril_say(siril) if siril is not None else say_default
+    # A folder given means the typed command. No folder opens the window, from the Scripts menu or typed in Siril's
+    # own command line (as other Siril scripts do), except where there is no screen (siril-cli, headless Siril).
     typed = bool(argv)
     if siril is not None:
         try:
-            typed = typed or siril.is_cli() or siril.is_headless()
+            typed = typed or siril.is_headless()
         except Exception:
             pass
     try:

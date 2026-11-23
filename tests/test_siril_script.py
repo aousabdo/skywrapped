@@ -1,4 +1,4 @@
-"""The Siril script (siril/SkyWrapped.py): everything that runs without Siril and without Qt.
+"""The Siril script (SkyWrapped/SkyWrapped.py): everything that runs without Siril and without Qt.
 
 The script keeps sirilpy and PyQt6 out of its import time, so its helpers (argument parsing, the output-folder rules,
 the install check, the typed command, the Qt-compatibility rewrite of the SVGs) can be tested here. The window and
@@ -19,8 +19,8 @@ from skywrapped.cards import render_cards
 from skywrapped.scan import scan_paths
 from skywrapped.stats import compute_wrapped
 
-SCRIPT = Path(__file__).resolve().parents[1] / "siril" / "SkyWrapped.py"
-pytestmark = pytest.mark.skipif(not SCRIPT.exists(), reason="siril/ is not part of this checkout (sdist)")
+SCRIPT = Path(__file__).resolve().parents[1] / "SkyWrapped" / "SkyWrapped.py"
+pytestmark = pytest.mark.skipif(not SCRIPT.exists(), reason="SkyWrapped/ is not part of this checkout (sdist)")
 
 needs_resvg = pytest.mark.skipif(importlib.util.find_spec("resvg_py") is None, reason="needs resvg-py")
 
@@ -184,15 +184,70 @@ def test_default_output_goes_to_documents_not_the_lights(sws, fixture_dir, tmp_p
     assert sorted(p.name for p in fixture_dir.iterdir() if not p.name.startswith("Light_")) == []
 
 
-def test_png_failure_keeps_summary_and_svgs(sws, fixture_dir, tmp_path):
+def test_png_failure_leaves_what_the_cli_leaves(sws, fixture_dir, tmp_path, monkeypatch):
+    """A PNG that cannot be drawn: the same files are left behind as by the command line (exit 3 on both)."""
+    from skywrapped import render_png
+
+    def cli_broken(svg, width=None):
+        raise render_png.MissingPngDependency("no drawing available")
+    monkeypatch.setattr(render_png, "svg_to_png", cli_broken)
+    cli_out = tmp_path / "cli"
+    assert cli.main([str(fixture_dir), "--all", "--tz", "0", "--out", str(cli_out)]) == 3
+
     def broken(svg, width):
         raise sws.PngUnavailable("no drawing available")
     out = tmp_path / "o"
     msgs = []
     assert sws.run_headless([str(fixture_dir), "--all", "--tz", "0", "--out", str(out)], png_renderer=broken,
                             say=lambda m, level="info": msgs.append(m)) == sws.EXIT_NO_PNG
-    assert (out / "summary.json").exists() and (out / "card-1.svg").exists() and not list(out.glob("*.png"))
+    assert sorted(p.name for p in out.iterdir()) == sorted(p.name for p in cli_out.iterdir())
+    assert (out / "summary.json").exists() and not list(out.glob("*.svg")) and not list(out.glob("*.png"))
     assert msgs[-1] == "no drawing available"
+
+
+def test_typed_paths_may_start_with_a_tilde(sws, fixture_dir, tmp_path, monkeypatch):
+    monkeypatch.setenv("HOME", str(tmp_path))
+    assert sws.run_headless([f"~/{fixture_dir.name}", "--all", "--tz", "0", "--json-only", "--out", "~/cards"],
+                            say=lambda *a, **k: None) == 0
+    assert (tmp_path / "cards" / "summary.json").exists()
+    assert not (Path.cwd() / "~").exists()
+
+
+class _FakeSiril:
+    def __init__(self, headless):
+        self.headless = headless
+
+    def connect(self):
+        return True
+
+    def is_cli(self):
+        return True                                   # sirilpy says True for anything but a menu click
+
+    def is_headless(self):
+        return self.headless
+
+    def log(self, *a, **k):
+        pass
+
+    def disconnect(self):
+        pass
+
+
+@pytest.mark.parametrize("headless, argv, expected", [
+    (False, [], "window"),                            # menu click, or `pyscript SkyWrapped.py` typed in Siril
+    (False, ["/lights"], "typed"),                    # a folder given: no window
+    (True, [], "typed"),                              # siril-cli / headless Siril: no screen, so the usage message
+])
+def test_window_or_typed_command(sws, monkeypatch, headless, argv, expected):
+    import types
+    fake = types.SimpleNamespace(SirilInterface=lambda: _FakeSiril(headless),
+                                 LogColor=types.SimpleNamespace(RED=1, GREEN=2, DEFAULT=0))
+    monkeypatch.setitem(sys.modules, "sirilpy", fake)
+    calls = []
+    monkeypatch.setattr(sws, "run_window", lambda siril: calls.append("window"))
+    monkeypatch.setattr(sws, "run_headless", lambda a, say: calls.append("typed") or 0)
+    assert sws.main(argv) == 0
+    assert calls == [expected]
 
 
 def test_install_decisions(sws, monkeypatch):
@@ -263,12 +318,37 @@ def test_qt_rewrite_of_the_text(sws):
     assert "Hello " in "".join(last.itertext())
 
 
+def test_no_wait_cursor():
+    """Qt's wait cursor crashes Siril's Python on macOS (signal 11, PyQt6 6.11): the script must never set one."""
+    code = "\n".join(ln for ln in SCRIPT.read_text(encoding="utf-8").splitlines() if not ln.lstrip().startswith("#"))
+    assert "setOverrideCursor" not in code and "WaitCursor" not in code and "BusyCursor" not in code
+
+
+def test_qt_colours_have_no_rgba(sws):
+    svg = ('<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">'
+           '<rect fill="rgba(255,255,255,0.08)" width="1" height="1"/>'
+           '<rect fill="rgba(255, 0, 128, 50%)" fill-opacity="0.5" stroke="rgba(0,0,0,1)" width="1" height="1"/>'
+           '<circle fill="#fff" fill-opacity="0.3" r="1"/>'
+           '<radialGradient id="g"><stop offset="0" stop-color="rgba(16,32,48,0.25)"/></radialGradient>'
+           '<rect fill="rgba(nonsense)" width="1" height="1"/></svg>')
+    root = ET.fromstring(sws.qt_colors(svg))
+    r1, r2, c, g, r3 = list(root)
+    assert (r1.get("fill"), r1.get("fill-opacity")) == ("#ffffff", "0.08")
+    assert (r2.get("fill"), r2.get("fill-opacity")) == ("#ff0080", "0.25")       # 50 % times the 0.5 it had
+    assert (r2.get("stroke"), r2.get("stroke-opacity")) == ("#000000", "1")
+    assert (c.get("fill"), c.get("fill-opacity")) == ("#fff", "0.3")             # untouched
+    assert (g[0].get("stop-color"), g[0].get("stop-opacity")) == ("#102030", "0.25")
+    assert r3.get("fill") == "rgba(nonsense)"                                      # not understood: left alone
+    assert sws.qt_colors("<svg/>") == "<svg/>"
+
+
 def test_qt_rewrite_leaves_real_cards_valid(sws, fixture_dir):
     frames, skipped = sws.scan_frames([str(fixture_dir)], [])
     wrapped = sws.count_year(frames, skipped, None, 0.0)
     for theme in sws.THEMES:
         for stem, card in sws.draw_cards(wrapped, theme):
             out = sws.qt_ready_svg(card.svg, advance=lambda family, weight, ch: 0.55)
+            assert "rgba(" not in out                                              # Qt would paint it black
             root = ET.fromstring(out)
             assert root.get("width") == str(card.width)
             for t in root.iter():
