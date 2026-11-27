@@ -70,5 +70,7 @@ and the same card SVGs. Paths may start with `~`.
 - The cards are drawn with PyQt6 in Siril's Python (installed on the first run if it is missing), so no separate PNG
   library is needed. They match the ones the `skywrapped` command line makes, apart from small differences in how the
   text is smoothed.
-- Tested with Siril 1.4.5 on macOS. Windows and Linux should work but have not been tried.
+- Tested with Siril 1.4.5 on macOS. On Linux (Ubuntu Server 26.04, Siril 1.4.5 AppImage) the typed command and the
+  window passed headless tests; a menu click and the file dialogs on a Linux desktop have not been tried. Windows should
+  work but has not been tried.
 - SkyWrapped is MIT licensed, like the rest of this project: https://github.com/aousabdo/skywrapped
