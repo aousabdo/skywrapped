@@ -4,8 +4,9 @@ Make your "year in astro" cards from inside Siril: a cover, a night calendar, yo
 records and your gear, plus a poster. You click, wait and save. No terminal.
 
 SkyWrapped reads only the headers of your light frames (FITS and XISF files), never the pixels, and nothing is
-uploaded. The first run downloads one small add-on (the `skywrapped` package, under half a megabyte), so the computer
-must be online that once.
+uploaded. The first run downloads one small add-on (the `skywrapped` package, under half a megabyte). If your Siril
+does not have PyQt6 yet, which draws the window and the cards, that is downloaded too, and it is much bigger (about
+100 MB on Linux). The computer must be online that once.
 
 ## Set it up (once)
 
@@ -22,6 +23,7 @@ must be online that once.
 
 1. Choose **Scripts > Python Scripts > (your folder) > SkyWrapped.py**. The first time, the window says it is getting
    ready while it downloads the add-on. When it says "skywrapped 0.1.0 is ready" (the number may be newer), go on.
+   If PyQt6 is missing, it is downloaded before any window appears: give it a few minutes, and watch Siril's Console.
 2. **Lights folder.** Siril's working folder is filled in. That is usually one target or one session, so click
    **Use the parent folder** (as often as it takes) until the folder holds the lights of the whole year, or press
    **Choose...** and pick it. Subfolders are searched.
@@ -65,7 +67,8 @@ and the same card SVGs. Paths may start with `~`.
 
 ## Notes
 
-- The cards are drawn with the PyQt6 that Siril's Python already has, so nothing else needs installing. They match the
-  ones the `skywrapped` command line makes, apart from small differences in how the text is smoothed.
+- The cards are drawn with PyQt6 in Siril's Python (installed on the first run if it is missing), so no separate PNG
+  library is needed. They match the ones the `skywrapped` command line makes, apart from small differences in how the
+  text is smoothed.
 - Tested with Siril 1.4.5 on macOS. Windows and Linux should work but have not been tried.
 - SkyWrapped is MIT licensed, like the rest of this project: https://github.com/aousabdo/skywrapped
